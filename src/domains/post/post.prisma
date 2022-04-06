@@ -1,0 +1,15 @@
+model Post {
+  id        String @id @default(cuid())
+  title     String
+  body      String
+  
+  author    User   @relation(fields: [author_id], references: [id])
+  author_id String
+
+  @@map("posts")
+}
+
+model User {
+  id    String @id
+  posts Post[]
+}
