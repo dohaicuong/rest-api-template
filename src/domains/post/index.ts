@@ -8,6 +8,30 @@ export const post: FastifyPluginAsync = fp(
     }
     server.get<{ Params: PostGetParams }>(
       '/post/:id',
+      {
+        schema: {
+          description: 'get a post with id',
+          tags: ['post'],
+          params: {
+            type: 'object',
+            properties: {
+              id: {
+                type: 'string',
+                description: 'post id'
+              }
+            }
+          },
+          response: {
+            200: {
+              description: 'Successful response',
+              type: 'object',
+              properties: {
+                ok: { type: 'boolean' }
+              }
+            }
+          }
+        }
+      },
       async (request, reply) => {
         console.log(server.prisma)
         console.log(request.params.id)
@@ -21,6 +45,30 @@ export const post: FastifyPluginAsync = fp(
     }
     server.post<{ Body: PostCreateBody }>(
       '/post/create',
+      {
+        schema: {
+          description: 'create a post',
+          tags: ['post'],
+          params: {
+            type: 'object',
+            properties: {
+              id: {
+                type: 'string',
+                description: 'post id'
+              }
+            }
+          },
+          response: {
+            200: {
+              description: 'Successful response',
+              type: 'object',
+              properties: {
+                ok: { type: 'boolean' }
+              }
+            }
+          }
+        }
+      },
       async (request, reply) => {
         const { body } = request
 
