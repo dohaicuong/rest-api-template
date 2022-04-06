@@ -1,14 +1,34 @@
 // SETUP SERVER
-import fastify from 'fastify'
-export const server = fastify({ logger: true })
+import fastify, { FastifyServerOptions } from 'fastify'
 
-// REGISTER PLUGINS
+// PLUGINS
 import cors from 'fastify-cors'
-server.register(cors, {})
-
 import prismaPlugin from './plugins/prisma'
-server.register(prismaPlugin)
+import { shutdown } from './plugins/shutdown'
+import { status } from './plugins/status'
 
-// REGISTER ROUTES
+// ROUTES
 import { post } from './domains/post'
-server.register(post)
+
+export const createServer = (opts: FastifyServerOptions = {}) => fastify(opts)
+  .register(shutdown)
+  .register(cors, {})
+  .register(prismaPlugin)
+  .register(status)
+  .register(post)
+
+export const startServer = async () => {
+  const server = createServer({
+    logger: {
+      level: 'info',
+    },
+    disableRequestLogging: process.env.ENABLE_REQUEST_LOGGING !== 'true',
+  })
+
+  const port = process.env.PORT ?? 4000
+  await server.listen(port, '0.0.0.0')
+    .catch(error => {
+      server.log.error(error)
+      process.exit(1)
+    })
+}
